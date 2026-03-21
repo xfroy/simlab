@@ -1,0 +1,301 @@
+{% extends "layout.html" %}
+{% block title %}Portfolio Risk Simulator – SimLab{% endblock %}
+
+{% block extra_head %}
+<style>
+    .asset-row {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr auto;
+        gap: .5rem;
+        align-items: end;
+        margin-bottom: .5rem;
+    }
+
+    .remove-btn {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        border-radius: var(--radius);
+        padding: .5rem .75rem;
+        cursor: pointer;
+        font-size: 1rem;
+        line-height: 1;
+        transition: all .2s;
+    }
+
+    .remove-btn:hover {
+        border-color: var(--red);
+        color: var(--red);
+    }
+
+    .weight-bar-wrap {
+        background: var(--surface2);
+        border-radius: 2px;
+        height: 4px;
+        margin-top: .3rem;
+        overflow: hidden;
+    }
+
+    .weight-bar {
+        height: 100%;
+        background: var(--green);
+        border-radius: 2px;
+        transition: width .3s;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📈 Portfolio Risk Simulator</h1>
+    <p>Model multi-asset portfolios with Monte Carlo methods. Compute VaR, CVaR, and return distributions.</p>
+</div>
+
+<form method="POST" id="portfolio-form">
+    {{ form.hidden_tag() }}
+    <input type="hidden" name="assets_json" id="assets_json">
+
+    <div style="display: grid; grid-template-columns: 380px 1fr; gap: 1.5rem; align-items: start;">
+
+        <!-- ── Left Panel ─────────────────────────────────── -->
+        <div>
+            <!-- Simulation settings -->
+            <div class="card">
+                <div class="card-title">Simulation Settings</div>
+                <div class="form-group">
+                    {{ form.initial_value.label }}
+                    {{ form.initial_value(class="") }}
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        {{ form.n_simulations.label }}
+                        {{ form.n_simulations(class="") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.n_days.label }}
+                        {{ form.n_days(class="") }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Asset builder -->
+            <div class="card">
+                <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Assets</span>
+                    <span id="weight-total-badge" class="badge badge-green">∑ = 1.00</span>
+                </div>
+
+                <div id="asset-header" class="asset-row" style="margin-bottom:.25rem;">
+                    <small style="color:var(--muted);">Name</small>
+                    <small style="color:var(--muted);">μ (return)</small>
+                    <small style="color:var(--muted);">σ (vol)</small>
+                    <small style="color:var(--muted);">Weight</small>
+                    <span></span>
+                </div>
+
+                <div id="asset-list"></div>
+
+                <button type="button" class="btn btn-ghost" onclick="addAsset()"
+                    style="width:100%; margin-top:.75rem; font-size:.75rem;">
+                    + Add Asset
+                </button>
+
+                <div class="weight-bar-wrap" style="margin-top:.75rem; height:6px;">
+                    <div class="weight-bar" id="weight-bar" style="width:0%;"></div>
+                </div>
+                <small id="weight-note" style="color:var(--muted); font-size:.72rem; margin-top:.25rem; display:block;">
+                    Weights must sum to 1.0
+                </small>
+            </div>
+
+            <button type="submit" class="btn btn-success" style="width:100%;" onclick="syncAssets()">
+                ▶ Run Simulation
+            </button>
+        </div>
+
+        <!-- ── Right Panel ────────────────────────────────── -->
+        <div>
+            {% if result and charts %}
+
+            <!-- Metrics row -->
+            <div class="grid-4" style="margin-bottom:1.25rem;">
+                <div class="stat-tile">
+                    <div class="stat-label">Mean Final Value</div>
+                    <div class="stat-value green">${{ "{:,.0f}".format(metrics.mean) }}</div>
+                    <small style="color:var(--muted); font-size:.72rem;">
+                        {{ "{:+.2f}".format(metrics.mean_return_pct) }}%
+                    </small>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-label">Std Deviation</div>
+                    <div class="stat-value orange">${{ "{:,.0f}".format(metrics.std) }}</div>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-label">VaR 95%</div>
+                    <div class="stat-value red">${{ "{:,.0f}".format(metrics.var_95) }}</div>
+                    <small style="color:var(--muted); font-size:.72rem;">
+                        {{ "{:.2f}".format(metrics.var_95_pct) }}%
+                    </small>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-label">VaR 99%</div>
+                    <div class="stat-value red">${{ "{:,.0f}".format(metrics.var_99) }}</div>
+                    <small style="color:var(--muted); font-size:.72rem;">
+                        {{ "{:.2f}".format(metrics.var_99_pct) }}%
+                    </small>
+                </div>
+            </div>
+
+            <!-- Second metrics row -->
+            <div class="grid-4" style="margin-bottom:1.25rem;">
+                <div class="stat-tile">
+                    <div class="stat-label">CVaR 95%</div>
+                    <div class="stat-value" style="color:var(--purple);">${{ "{:,.0f}".format(metrics.cvar_95) }}</div>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-label">Prob. Profit</div>
+                    <div class="stat-value green">{{ "{:.1f}".format(metrics.prob_profit_pct) }}%</div>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-label">Skewness</div>
+                    <div class="stat-value">{{ "{:.3f}".format(metrics.skewness) }}</div>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-label">Kurtosis</div>
+                    <div class="stat-value">{{ "{:.3f}".format(metrics.kurtosis) }}</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="card" style="margin-bottom:1rem;">
+                <div class="card-title">Portfolio Trajectories</div>
+                <img src="data:image/png;base64,{{ charts.trajectory_b64 }}" alt="Trajectory chart" class="chart-img">
+            </div>
+
+            <div class="card">
+                <div class="card-title">Distribution of Final Values</div>
+                <img src="data:image/png;base64,{{ charts.histogram_b64 }}" alt="Histogram" class="chart-img">
+            </div>
+
+            <!-- Assets used -->
+            {% if assets_data %}
+            <div class="card">
+                <div class="card-title">Assets Simulated</div>
+                <table style="width:100%; border-collapse:collapse; font-size:.85rem; font-family: var(--font-mono);">
+                    <thead>
+                        <tr
+                            style="color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.05em;">
+                            <th style="text-align:left; padding:.4rem .6rem;">Name</th>
+                            <th style="text-align:right; padding:.4rem .6rem;">μ</th>
+                            <th style="text-align:right; padding:.4rem .6rem;">σ</th>
+                            <th style="text-align:right; padding:.4rem .6rem;">Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in assets_data %}
+                        <tr style="border-top: 1px solid var(--border);">
+                            <td style="padding:.5rem .6rem; color:var(--text);">{{ a.name }}</td>
+                            <td style="padding:.5rem .6rem; text-align:right; color:var(--green);">{{
+                                "{:.2%}".format(a.mu) }}</td>
+                            <td style="padding:.5rem .6rem; text-align:right; color:var(--orange);">{{
+                                "{:.2%}".format(a.sigma) }}</td>
+                            <td style="padding:.5rem .6rem; text-align:right; color:var(--acc);">{{
+                                "{:.2%}".format(a.weight) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="card" style="text-align:center; padding:4rem 2rem; height:100%;">
+                <div style="font-size:3rem; margin-bottom:1rem; opacity:.3;">📊</div>
+                <p style="color:var(--muted); font-family:var(--font-mono); font-size:0.875rem;">
+                    Add assets, configure weights, and run the simulation.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</form>
+
+<script>
+    const DEFAULTS = [
+        { name: "Equity", mu: 0.12, sigma: 0.20, weight: 0.50 },
+        { name: "Bonds", mu: 0.05, sigma: 0.07, weight: 0.30 },
+        { name: "Gold", mu: 0.06, sigma: 0.15, weight: 0.20 },
+    ];
+
+    let assets = JSON.parse(JSON.stringify(DEFAULTS));
+
+    function renderAssets() {
+        const list = document.getElementById("asset-list");
+        list.innerHTML = "";
+        assets.forEach((a, i) => {
+            const row = document.createElement("div");
+            row.className = "asset-row";
+            row.innerHTML = `
+        <input type="text"   value="${a.name}"   placeholder="Name"
+               oninput="assets[${i}].name=this.value; updateWeightBar();">
+        <input type="number" value="${a.mu}"     step="0.01"  placeholder="0.10"
+               oninput="assets[${i}].mu=parseFloat(this.value)||0; updateWeightBar();">
+        <input type="number" value="${a.sigma}"  step="0.01"  placeholder="0.20"
+               oninput="assets[${i}].sigma=parseFloat(this.value)||0; updateWeightBar();">
+        <input type="number" value="${a.weight}" step="0.01" min="0" max="1" placeholder="0.33"
+               oninput="assets[${i}].weight=parseFloat(this.value)||0; updateWeightBar();">
+        <button type="button" class="remove-btn" onclick="removeAsset(${i})">✕</button>
+      `;
+            list.appendChild(row);
+        });
+        updateWeightBar();
+    }
+
+    function addAsset() {
+        assets.push({ name: "Asset " + (assets.length + 1), mu: 0.08, sigma: 0.20, weight: 0.0 });
+        renderAssets();
+    }
+
+    function removeAsset(i) {
+        if (assets.length <= 1) return;
+        assets.splice(i, 1);
+        renderAssets();
+    }
+
+    function updateWeightBar() {
+        const total = assets.reduce((s, a) => s + (parseFloat(a.weight) || 0), 0);
+        const pct = Math.min(total / 1.0, 1.0) * 100;
+        document.getElementById("weight-bar").style.width = pct + "%";
+        const badge = document.getElementById("weight-total-badge");
+        const note = document.getElementById("weight-note");
+        badge.textContent = "∑ = " + total.toFixed(2);
+        if (Math.abs(total - 1.0) < 0.01) {
+            badge.className = "badge badge-green";
+            document.getElementById("weight-bar").style.background = "var(--green)";
+            note.style.color = "var(--muted)";
+        } else {
+            badge.className = "badge badge-red";
+            document.getElementById("weight-bar").style.background = "var(--red)";
+            note.style.color = "var(--red)";
+            note.textContent = "⚠ Weights must sum to 1.0 (current: " + total.toFixed(3) + ")";
+        }
+    }
+
+    function syncAssets() {
+        // Re-read all input values before submit
+        const rows = document.querySelectorAll("#asset-list .asset-row");
+        rows.forEach((row, i) => {
+            const inputs = row.querySelectorAll("input");
+            assets[i].name = inputs[0].value;
+            assets[i].mu = parseFloat(inputs[1].value) || 0;
+            assets[i].sigma = parseFloat(inputs[2].value) || 0;
+            assets[i].weight = parseFloat(inputs[3].value) || 0;
+        });
+        document.getElementById("assets_json").value = JSON.stringify(assets);
+    }
+
+    // Init
+    renderAssets();
+</script>
+{% endblock %}

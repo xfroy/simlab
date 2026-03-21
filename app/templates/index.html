@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block title %}SimLab – Monte Carlo & Portfolio Risk Simulator{% endblock %}
+
+{% block content %}
+<div class="page-header" style="border: none; margin-bottom: 3rem;">
+    <div
+        style="font-family: var(--font-mono); color: var(--muted); font-size: 0.75rem; margin-bottom: .75rem; letter-spacing: .1em;">
+        // SIMLAB v1.0 — QUANTITATIVE SIMULATION PLATFORM
+    </div>
+    <h1 style="font-size: 2.2rem; line-height: 1.2; margin-bottom: .75rem;">
+        Monte Carlo &amp;<br>
+        <span style="color: var(--green);">Portfolio Risk</span> Simulator
+    </h1>
+    <p style="color: var(--muted); max-width: 540px; font-size: 1rem; line-height: 1.7;">
+        Explore uncertainty, model risk, and simulate financial outcomes using
+        stochastic processes and Geometric Brownian Motion.
+    </p>
+</div>
+
+<!-- Feature cards -->
+<div class="grid-2" style="gap: 1.25rem; margin-bottom: 3rem;">
+
+    <a href="{{ url_for('main.monte_carlo') }}" style="text-decoration: none; display: block;" class="card"
+        onmouseenter="this.style.borderColor='var(--acc)'" onmouseleave="this.style.borderColor='var(--border)'">
+        <div style="font-size: 2rem; margin-bottom: .75rem;">🎲</div>
+        <h2 style="font-family: var(--font-mono); font-size: 1rem; margin-bottom: .5rem; color: var(--acc);">
+            Monte Carlo Simulation
+        </h2>
+        <p style="color: var(--muted); font-size: 0.875rem; line-height: 1.6;">
+            Simulate stochastic random walks with configurable drift and volatility.
+            Visualise multiple GBM paths simultaneously.
+        </p>
+        <div style="margin-top: 1rem; display: flex; gap: .5rem; flex-wrap: wrap;">
+            <span class="badge badge-blue">GBM paths</span>
+            <span class="badge badge-blue">Drift μ</span>
+            <span class="badge badge-blue">Volatility σ</span>
+        </div>
+    </a>
+
+    <a href="{{ url_for('main.portfolio') }}" style="text-decoration: none; display: block;" class="card"
+        onmouseenter="this.style.borderColor='var(--green)'" onmouseleave="this.style.borderColor='var(--border)'">
+        <div style="font-size: 2rem; margin-bottom: .75rem;">📈</div>
+        <h2 style="font-family: var(--font-mono); font-size: 1rem; margin-bottom: .5rem; color: var(--green);">
+            Portfolio Risk Simulator
+        </h2>
+        <p style="color: var(--muted); font-size: 0.875rem; line-height: 1.6;">
+            Model a multi-asset portfolio across thousands of simulations. Compute
+            VaR, CVaR, and full return distributions.
+        </p>
+        <div style="margin-top: 1rem; display: flex; gap: .5rem; flex-wrap: wrap;">
+            <span class="badge badge-green">Multi-asset</span>
+            <span class="badge badge-green">VaR / CVaR</span>
+            <span class="badge badge-green">Histogram</span>
+        </div>
+    </a>
+
+</div>
+
+<!-- Tech stack -->
+<div class="card">
+    <div class="card-title">Tech Stack</div>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        {% for tech in ["Python", "Flask", "NumPy", "Pandas", "Matplotlib", "SciPy"] %}
+        <span class="badge badge-purple" style="font-size: 0.75rem; padding: .3rem .75rem;">
+            {{ tech }}
+        </span>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

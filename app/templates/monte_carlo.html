@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+{% block title %}Monte Carlo Simulation – SimLab{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🎲 Monte Carlo Simulation</h1>
+    <p>Geometric Brownian Motion paths with configurable drift and volatility.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; align-items: start;">
+
+    <!-- ── Form Panel ─────────────────────────────────── -->
+    <div>
+        <div class="card">
+            <div class="card-title">Parameters</div>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="form-group">
+                    {{ form.mu.label }}
+                    {{ form.mu(class="", placeholder="0.05") }}
+                    <small style="color:var(--muted); font-size:.75rem;">Annual drift (e.g. 0.05 = 5%)</small>
+                </div>
+
+                <div class="form-group">
+                    {{ form.sigma.label }}
+                    {{ form.sigma(class="", placeholder="1.0") }}
+                    <small style="color:var(--muted); font-size:.75rem;">Annual volatility (e.g. 0.20 = 20%)</small>
+                </div>
+
+                <div class="form-group">
+                    {{ form.initial_value.label }}
+                    {{ form.initial_value(class="", placeholder="100") }}
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        {{ form.n_steps.label }}
+                        {{ form.n_steps(class="") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.n_paths.label }}
+                        {{ form.n_paths(class="") }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:.5rem;">
+                    ▶ Run Simulation
+                </button>
+            </form>
+        </div>
+
+        {% if result %}
+        <div class="card">
+            <div class="card-title">Statistics</div>
+            <div style="display: flex; flex-direction: column; gap: .75rem;">
+                <div class="stat-tile">
+                    <div class="stat-label">Mean Final Value</div>
+                    <div class="stat-value green">{{ "{:,.2f}".format(result.stats.mean) }}</div>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-label">Std Deviation</div>
+                    <div class="stat-value orange">{{ "{:,.2f}".format(result.stats.std) }}</div>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-label">VaR 95%</div>
+                    <div class="stat-value red">{{ "{:,.2f}".format(result.stats.var_95) }}</div>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-label">Median</div>
+                    <div class="stat-value">{{ "{:,.2f}".format(result.stats.median) }}</div>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-label">Min / Max</div>
+                    <div class="stat-value" style="font-size:.95rem;">
+                        {{ "{:,.2f}".format(result.stats.min) }}
+                        <span style="color:var(--muted); font-weight:400;"> / </span>
+                        {{ "{:,.2f}".format(result.stats.max) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ── Results Panel ──────────────────────────────── -->
+    <div>
+        {% if result %}
+        <div class="card">
+            <div class="card-title">Simulation Paths</div>
+            <img src="data:image/png;base64,{{ result.plot_b64 }}" alt="Monte Carlo paths" class="chart-img">
+        </div>
+        {% else %}
+        <div class="card" style="text-align: center; padding: 4rem 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem; opacity: .3;">📊</div>
+            <p style="color: var(--muted); font-family: var(--font-mono); font-size: 0.875rem;">
+                Configure parameters and run a simulation to see results.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
