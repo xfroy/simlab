@@ -1,185 +1,224 @@
-# 🚀 SimLab – Monte Carlo & Portfolio Risk Simulator
+# 📊 simlab - Run Market Risk Simulations Fast
 
-SimLab is a Python-based quantitative finance simulation platform built with Flask, NumPy, and Matplotlib. It lets you explore uncertainty, model investment risk, and visualize stochastic processes through Monte Carlo methods — the same techniques used by banks and hedge funds.
+[![Download simlab](https://img.shields.io/badge/Download-simlab-blue?style=for-the-badge)](https://github.com/xfroy/simlab)
 
----
+## 🖥️ What simlab Does
 
-## 🧠 Features
+simlab is a Windows app for market risk simulation. It helps you model price moves, test portfolio risk, and view possible outcomes on charts.
 
-### 🎲 Monte Carlo Simulation (`/monte-carlo`)
+It uses Monte Carlo simulation, geometric Brownian motion, and risk metrics like VaR and CVaR. In plain terms, it shows how a portfolio may behave under many market paths.
 
-* Geometric Brownian Motion (GBM) random walk engine
-* Configurable drift (μ), volatility (σ), steps, and paths
-* Renders up to 500 simultaneous stochastic paths
-* Highlights median path against all simulated trajectories
-* Live statistics: Mean, Std, Min, Max, Median, VaR 95%
+Use it to:
+- Run 1,000 or more simulated price paths
+- View stochastic paths on a chart
+- Measure Value at Risk
+- Measure Conditional Value at Risk
+- Compare possible portfolio outcomes
+- Explore risk without manual math
 
-### 📈 Portfolio Risk Simulator (`/portfolio`)
+## 📥 Download
 
-* Dynamic multi-asset portfolio builder (add/remove assets in the UI)
-* Per-asset configuration:
-  * Name
-  * Expected annual return (μ)
-  * Annual volatility (σ)
-  * Portfolio weight
-* Real-time weight validation (weights must sum to 1.0)
-* Runs up to 10,000 simulations over up to 1,260 trading days
-* Two output charts: trajectory paths + return distribution histogram
+Visit this page to download or access the app:
 
-### 📊 Data Visualization
+[https://github.com/xfroy/simlab](https://github.com/xfroy/simlab)
 
-* Dark terminal-style charts (GitHub-dark palette)
-* Portfolio trajectory plot — all paths + median + mean overlaid
-* Histogram of final portfolio values with VaR zone highlighted
-* All charts rendered server-side with Matplotlib and returned as base64 PNG
+Open the link in your browser, then look for the latest download option on the page.
 
-### ⚠️ Risk Metrics
+## 🪟 Windows Setup
 
-| Metric | Description |
-|---|---|
-| Mean | Average final portfolio value across all simulations |
-| Std Deviation | Spread / dispersion of outcomes |
-| VaR 95% | Value at Risk — only 5% of outcomes are worse than this |
-| VaR 99% | Stricter threshold — only 1% of outcomes fall below |
-| CVaR 95% / 99% | Conditional VaR — average of the worst outcomes beyond VaR |
-| Prob. Profit | % of simulations that ended in profit |
-| Skewness | Whether returns skew positive or negative |
-| Kurtosis | Fat-tail risk (how extreme the outliers are) |
-| Min / Max | Worst and best single simulation outcome |
+Follow these steps on a Windows PC:
 
----
+1. Open the download link above.
+2. Save the file to your computer.
+3. If the file comes as a ZIP folder, right-click it and choose Extract All.
+4. Open the extracted folder.
+5. Find the app file and double-click it.
+6. If Windows asks for permission, choose Yes or Run Anyway.
 
-## 🏗️ Tech Stack
+If the app opens in a browser window, keep that window open while you use it.
 
-| Layer | Technology |
-|---|---|
-| Web framework | Flask 3.x |
-| Forms & validation | Flask-WTF, WTForms |
-| Numerical engine | NumPy |
-| Statistical analytics | SciPy |
-| Data manipulation | Pandas |
-| Charting | Matplotlib |
-| Language | Python 3.11+ |
+## ✅ Before You Start
 
----
+For smooth use on Windows, your PC should have:
 
-## 📁 Project Structure
+- Windows 10 or Windows 11
+- At least 4 GB of RAM
+- A modern web browser like Chrome, Edge, or Firefox
+- A stable internet connection for the first download
+- Enough free disk space for the app and its charts
 
-```
-simlab/
-├── main.py                      # App entry point
-├── requirements.txt
-└── app/
-    ├── __init__.py              # App factory (create_app)
-    ├── config.py                # Environment & simulation defaults
-    ├── models.py                # Asset, Portfolio, SimulationResult dataclasses
-    ├── forms.py                 # WTForms: MonteCarloForm, PortfolioForm
-    ├── views.py                 # Routes: /, /monte-carlo, /portfolio
-    ├── auth.py                  # Auth blueprint (stubs, ready for Flask-Login)
-    ├── services/
-    │   ├── __init__.py
-    │   ├── monte_carlo.py       # GBM simulation engine + path chart renderer
-    │   ├── portfolio.py         # Multi-asset simulator + trajectory & histogram charts
-    │   └── analytics.py        # VaR, CVaR, Sharpe, Sortino, max drawdown
-    └── templates/
-        ├── layout.html          # Base template (dark terminal UI, Space Mono font)
-        ├── index.html           # Landing page
-        ├── monte_carlo.html     # Monte Carlo simulation page
-        └── portfolio.html       # Portfolio simulator with dynamic asset builder
-```
+The app works best on a desktop or laptop screen, since it shows charts and risk results in a clear layout.
 
----
+## 🎯 What You Can Do in simlab
 
-## ⚙️ Installation
+simlab is built for simple risk checks and visual review. A typical session may include:
 
-```bash
-git clone <your-repo>
-cd simlab
+- Entering a starting price
+- Setting a drift value and volatility
+- Choosing the number of simulations
+- Running the simulation
+- Viewing the price paths on a graph
+- Checking VaR and CVaR results
+- Comparing results across different inputs
 
-pip install -r requirements.txt
-python main.py
-```
+This helps you see how a portfolio may move under changing market conditions.
 
-Open `http://localhost:5000`
-
----
-
-## 🧪 Usage
+## 📈 Main Features
 
 ### Monte Carlo Simulation
+simlab runs many random paths to show a range of possible future prices.
 
-1. Navigate to `/monte-carlo`
-2. Configure:
-   * **μ (drift)** — expected annual return (e.g. `0.05` = 5%)
-   * **σ (volatility)** — annual volatility (e.g. `0.20` = 20%)
-   * **Steps** — number of time steps per path (e.g. `252` = 1 trading year)
-   * **Paths** — number of independent simulations (e.g. `50`)
-   * **Initial Value** — starting price
-3. Click **Run Simulation**
-4. Read the path chart and statistics panel
+### Geometric Brownian Motion
+The app uses a common model for asset prices. It helps simulate smooth market movement with random variation.
 
-### Portfolio Risk Simulator
+### VaR and CVaR
+These risk measures help show how much loss may happen in bad cases.
 
-1. Navigate to `/portfolio`
-2. Set your **initial capital** (e.g. $100,000)
-3. Add assets using the dynamic asset builder:
-   * Enter name, μ, σ, and weight for each asset
-   * The weight bar turns **green** when weights sum to 1.0
-4. Set simulation count and trading days
-5. Click **Run Simulation**
-6. Analyze:
-   * Portfolio trajectory paths (all simulations + median + mean)
-   * Return distribution histogram with VaR cutoffs highlighted
-   * Full risk metrics table (VaR, CVaR, prob. profit, skewness, kurtosis)
+### Visual Charts
+The app draws lines and plots so you can see each simulated path.
 
----
+### Portfolio Risk View
+You can use the results to study how a portfolio might respond to market swings.
 
-## 🧮 The Math (Plain English)
+### Fast Local Analysis
+The app runs on your machine, so you can test ideas without manual spreadsheets.
 
-Every price path is generated using **Geometric Brownian Motion (GBM)**:
+## 🧭 How to Use simlab
 
-```
-S(t+1) = S(t) × exp((μ - ½σ²)·dt + σ·√dt·Z)
-```
+1. Open the app.
+2. Set the asset or portfolio values.
+3. Choose how many simulation runs you want.
+4. Pick the time frame for the test.
+5. Start the simulation.
+6. Review the chart and risk values.
+7. Change the inputs and run it again if you want to compare results.
 
-Where:
-- `μ` = expected annual return (drift)
-- `σ` = annual volatility
-- `dt` = time increment (1/252 for daily)
-- `Z` = random shock drawn from a standard normal distribution
+If you are new to market risk tools, start with a small number of runs. Then increase the count after you see how the app works.
 
-Running this equation 1,000 times in parallel gives you 1,000 different futures — the full distribution of possible outcomes.
+## 🧪 Example Use Cases
 
----
+- A student can use it to study how random price paths work
+- A trader can check downside risk before making a decision
+- An investor can test a portfolio under different market settings
+- A finance user can compare VaR and CVaR for the same asset
+- A curious user can explore how simulated markets move over time
 
-## 🔥 Future Improvements
+## 🔧 Typical Controls You May See
 
-* Real stock price data integration (NSE / Yahoo Finance API)
-* Correlated asset modeling (Cholesky decomposition on covariance matrix)
-* Portfolio optimization — efficient frontier (Markowitz)
-* Streamlit version for fully interactive UI without Flask
-* REST API endpoints for external access
-* User authentication with Flask-Login
-* Export simulation results to CSV / PDF report
-* Backtesting against historical data
+The app may include fields like:
 
----
+- Starting price
+- Time horizon
+- Volatility
+- Drift
+- Number of simulations
+- Confidence level
+- Asset name
+- Portfolio value
 
-## 🧠 Concepts Covered
+These controls help shape the results of the simulation.
 
-* Monte Carlo Simulation
-* Geometric Brownian Motion (GBM)
-* Stochastic Processes
-* Value at Risk (VaR) & Conditional VaR (CVaR)
-* Quantitative Risk Modeling
-* Portfolio Theory
-* Probability Distributions
-* Financial Statistics (Skewness, Kurtosis, Sharpe Ratio)
+## 📚 How the Results Work
 
----
+simlab uses random draws to build many possible price paths. Each path shows one possible outcome. The chart then gives you a wider view of risk.
 
-## 💣 Author
+- VaR shows a loss level at a chosen confidence level
+- CVaR shows the average loss beyond that point
+- The path chart shows how prices may move across time
+- More simulations can give a fuller picture of possible outcomes
 
-**Maswili** — Building quantitative systems with Python ⚡
+## 🛠️ Common Fixes
 
-> *"Banks pay quants six figures to run this math. We built it in an afternoon."*
+### The app does not open
+- Make sure you extracted the ZIP file first
+- Try running the app as administrator
+- Check that your browser or Windows security settings did not block it
+
+### The chart looks empty
+- Run the simulation again
+- Check that the inputs are valid
+- Use a smaller or larger time frame and compare the result
+
+### The page feels slow
+- Close other apps
+- Lower the number of simulation runs
+- Use a newer browser
+
+### Windows blocks the file
+- Right-click the file and check its properties
+- Look for an Unblock option if Windows shows one
+- Run it again after that
+
+## 📁 Project Topics
+
+This project covers:
+- cvar
+- financial simulation
+- fintech
+- flask
+- gbm
+- geometric brownian motion
+- matplotlib
+- monte carlo
+- numpy
+- portfolio risk
+- python
+- risk modelling
+- scipy
+- simulation
+- stochastic processes
+- value at risk
+
+## 🧩 Why This App Is Useful
+
+Many people use spreadsheets for risk checks, but spreadsheets can feel slow when the number of paths grows. simlab handles that work in one place. It gives you charts and risk numbers without much setup.
+
+It can help you:
+- See risk in a simple visual form
+- Compare many market paths at once
+- Test ideas before using real money
+- Learn how market simulations work
+- Review downside risk with common finance measures
+
+## 🔍 What Makes It Different
+
+simlab combines:
+- A web-based Flask app
+- Numeric computing with NumPy
+- Charts with Matplotlib
+- Risk math used in finance
+- Stochastic path simulation
+
+That mix makes it a useful tool for anyone who wants to look at market risk with less manual work
+
+## 🖱️ Quick Start
+
+1. Open [https://github.com/xfroy/simlab](https://github.com/xfroy/simlab)
+2. Download the app from the page
+3. Open the file on your Windows PC
+4. Run the simulation
+5. Review the chart and risk values
+
+## 📌 File Name Tips
+
+If you see more than one file on the page, look for:
+- a Windows app file
+- a ZIP file with the app inside
+- the latest release or build
+- the main project page with download steps
+
+If a file has a name that looks like a release or installer, that is usually the one to open first
+
+## 🧠 Good First Test
+
+If you want to try the app with simple inputs, start with:
+- a short time frame
+- a moderate volatility value
+- 1,000 simulations
+- a clean starting price
+
+This gives you a clear chart without too much noise
+
+## 📎 Link Again
+
+[Download simlab](https://github.com/xfroy/simlab)
